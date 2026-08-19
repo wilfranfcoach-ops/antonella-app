@@ -1,0 +1,17 @@
+{
+  "name": "Feliz Cumple Antonella",
+  "short_name": "Antonella",
+  "description": "Una app de cumpleaños llena de cariño",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fecfef",
+  "theme_color": "#ff2d95",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
