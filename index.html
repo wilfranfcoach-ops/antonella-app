@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feliz Cumple Antonella 🎉</title>
+<title>Diario de Antonella 💗</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
 <meta name="theme-color" content="#ff2d95">
@@ -16,108 +16,155 @@
     min-height: 100vh;
     color: #4a004a;
     text-align: center;
-    padding: 30px 20px 60px;
+    padding: 20px 15px 50px;
   }
-  h1 {
-    font-size: 28px;
-    margin-bottom: 4px;
-  }
-  h3 {
-    font-weight: 500;
-    margin-top: 0;
-  }
+  h1 { font-size: 22px; margin: 8px 0 0; }
   .foto {
-    width: 160px;
-    height: 160px;
+    width: 80px; height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 6px solid #ff2d95;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-    margin: 20px auto;
+    border: 4px solid #ff2d95;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    margin: 8px auto 4px;
     display: block;
   }
-  button {
-    background-color: #ff2d95;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 50px;
-    padding: 15px 40px;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    cursor: pointer;
-    margin: 10px;
-  }
-  button:hover { background-color: #ff69c9; }
-  button:active { transform: scale(0.97); }
-
-  .mensaje {
-    background-color: white;
-    border-radius: 20px;
-    padding: 25px;
-    margin: 20px auto;
-    max-width: 420px;
-    font-size: 19px;
-    font-weight: 600;
-    color: #d6006c;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    display: none;
-  }
-  .juego {
-    margin-top: 40px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 20px;
-    padding: 20px;
-    max-width: 420px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  input[type=number] {
-    font-size: 18px;
-    padding: 8px;
-    width: 80px;
-    border-radius: 10px;
-    border: 2px solid #ff2d95;
-    text-align: center;
-    margin-right: 10px;
-  }
-  #resultado { margin-top: 12px; font-weight: 600; }
 
   .banner-instalar {
     display: none;
     background: white;
     border-radius: 16px;
-    padding: 16px 20px;
+    padding: 14px 18px;
     max-width: 420px;
-    margin: 0 auto 25px;
+    margin: 0 auto 18px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   }
-  .banner-instalar p {
-    margin: 0 0 10px;
-    font-size: 16px;
+  .banner-instalar p { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #d6006c; }
+
+  button {
+    background-color: #ff2d95;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 50px;
+    padding: 9px 20px;
+    border: none;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    cursor: pointer;
+    margin: 5px;
+  }
+  button:hover { background-color: #ff69c9; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ---- Navegador de días ---- */
+  .navegador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    max-width: 420px;
+    margin: 15px auto;
+  }
+  .nav-flecha {
+    background: white;
+    color: #ff2d95;
+    border-radius: 50%;
+    width: 42px; height: 42px;
+    font-size: 20px;
+    padding: 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  }
+  .nav-fecha {
+    background: white;
+    border-radius: 14px;
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 160px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    text-transform: capitalize;
+  }
+  .etiqueta-hoy {
+    display: inline-block;
+    background: #ff2d95;
+    color: white;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+  }
+  .aviso-pasado {
+    font-size: 13px;
+    color: #a3005c;
+    background: #ffe4f3;
+    border-radius: 12px;
+    padding: 8px 14px;
+    max-width: 400px;
+    margin: 0 auto 15px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.65);
+    border-radius: 20px;
+    padding: 18px;
+    margin: 14px auto;
+    max-width: 420px;
+    text-align: left;
+  }
+  .card h3 { margin-top: 0; text-align: center; font-size: 16px; }
+
+  /* ---- Frase ---- */
+  .mensaje {
+    background-color: white;
+    border-radius: 16px;
+    padding: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: #d6006c;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
   }
-  .banner-instalar button {
-    margin: 0;
-    font-size: 17px;
-    padding: 10px 28px;
+
+  /* ---- Escribir / voz ---- */
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    border-radius: 14px;
+    border: 2px solid #ffb6de;
+    padding: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
   }
-  footer {
-    margin-top: 50px;
-    font-size: 13px;
-    opacity: 0.7;
+  textarea:disabled { background: #f4f4f4; color: #777; }
+  .fila-botones { text-align: center; margin-top: 8px; }
+  #timer { text-align: center; font-size: 16px; font-weight: 600; margin: 6px 0; }
+  audio { width: 100%; margin-top: 10px; }
+
+  /* ---- Dibujo ---- */
+  #lienzo {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 380px;
+    display: block;
+    margin: 0 auto;
+    touch-action: none;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
   }
-  .confetti {
-    position: fixed;
-    top: -10px;
-    font-size: 22px;
-    animation: caer linear forwards;
-    pointer-events: none;
+  .colores { text-align: center; margin: 10px 0; }
+  .color-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 3px;
+    border: 3px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
   }
-  @keyframes caer {
-    to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
-  }
+  .color-btn.activo { border-color: #4a004a; }
+  .fila-dibujo-botones { text-align: center; }
+
+  footer { margin-top: 30px; font-size: 12px; opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -127,26 +174,96 @@
     <button id="instalarBtn">⬇️ Instalar App</button>
   </div>
 
-  <h1>🎉 ¡Feliz Cumpleaños, Antonella! 🎉</h1>
-  <h3>11 años de pura magia 💗✨</h3>
-
+  <h1>📔 Diario de Antonella 💗</h1>
   <img src="antonella.jpg" alt="Antonella" class="foto">
 
-  <p style="font-size:18px;">Toca el corazón cada día y recibe un mensaje de amor de tu papá 💌</p>
-  <button id="mensajeBtn">💖 Toca aquí 💖</button>
-  <div class="mensaje" id="mensajeCaja"></div>
+  <!-- ---------- NAVEGADOR DE DÍAS ---------- -->
+  <div class="navegador">
+    <button class="nav-flecha" id="diaAnterior">◀</button>
+    <div class="nav-fecha" id="fechaVisible">-</div>
+    <button class="nav-flecha" id="diaSiguiente">▶</button>
+  </div>
+  <div class="aviso-pasado" id="avisoPasado" style="display:none;">
+    📖 Estás viendo un día anterior — solo se puede escribir en el día de hoy
+  </div>
 
-  <div class="juego">
-    <h3>🎁 Bonus: Adivina mi número secreto 🎁</h3>
-    <p>Pensé un número entre 1 y 20... ¿lo adivinas?</p>
-    <input type="number" id="intento" min="1" max="20">
-    <button id="adivinarBtn">Adivinar 🎯</button>
-    <div id="resultado"></div>
+  <!-- ---------- FRASE DEL DÍA ---------- -->
+  <div class="card">
+    <h3>💌 Frase de papá</h3>
+    <div class="mensaje" id="fraseDelDia">-</div>
+  </div>
+
+  <!-- ---------- ESCRIBIR / GRABAR VOZ ---------- -->
+  <div class="card">
+    <h3>📝 Escribe o graba tu voz</h3>
+    <textarea id="textoDia" placeholder="¿Cómo te sientes hoy? ¿Qué pasó? Escribe aquí..."></textarea>
+    <div class="fila-botones">
+      <button id="guardarTextoBtn">💾 Guardar texto</button>
+    </div>
+    <div class="fila-botones">
+      <button id="grabarBtn">🔴 Grabar</button>
+      <button id="detenerBtn" disabled>⏹️ Detener</button>
+    </div>
+    <div id="timer">00:00</div>
+    <audio id="reproductor" controls style="display:none;"></audio>
+  </div>
+
+  <!-- ---------- DIBUJO ---------- -->
+  <div class="card">
+    <h3>🎨 Dibuja algo de hoy</h3>
+    <canvas id="lienzo" width="380" height="380"></canvas>
+    <div class="colores">
+      <span class="color-btn activo" style="background:#ff2d95" data-color="#ff2d95"></span>
+      <span class="color-btn" style="background:#000000" data-color="#000000"></span>
+      <span class="color-btn" style="background:#2d7dff" data-color="#2d7dff"></span>
+      <span class="color-btn" style="background:#2dff6e" data-color="#2dff6e"></span>
+      <span class="color-btn" style="background:#ffd12d" data-color="#ffd12d"></span>
+      <span class="color-btn" style="background:#a02dff" data-color="#a02dff"></span>
+    </div>
+    <div class="fila-dibujo-botones">
+      <button id="borrarBtn">🗑️ Borrar</button>
+      <button id="guardarDibujoBtn">💾 Guardar dibujo</button>
+    </div>
   </div>
 
   <footer>Hecho con 💗 por tu papá</footer>
 
 <script>
+  // ================== FECHAS Y NAVEGACIÓN ==================
+  const HOY = new Date();
+  HOY.setHours(0,0,0,0);
+  let fechaSeleccionada = new Date(HOY);
+
+  function claveFecha(fecha) {
+    return fecha.toISOString().slice(0, 10); // YYYY-MM-DD
+  }
+  function esHoy(fecha) {
+    return claveFecha(fecha) === claveFecha(HOY);
+  }
+
+  const fechaVisible = document.getElementById("fechaVisible");
+  const avisoPasado = document.getElementById("avisoPasado");
+  const diaSiguienteBtn = document.getElementById("diaSiguiente");
+
+  function actualizarNavegador() {
+    const opciones = { weekday: "short", day: "numeric", month: "short" };
+    let texto = fechaSeleccionada.toLocaleDateString("es-CO", opciones);
+    fechaVisible.innerHTML = texto + (esHoy(fechaSeleccionada) ? "<br><span class='etiqueta-hoy'>HOY</span>" : "");
+    avisoPasado.style.display = esHoy(fechaSeleccionada) ? "none" : "block";
+    diaSiguienteBtn.disabled = esHoy(fechaSeleccionada);
+  }
+
+  document.getElementById("diaAnterior").addEventListener("click", () => {
+    fechaSeleccionada.setDate(fechaSeleccionada.getDate() - 1);
+    cargarDia();
+  });
+  document.getElementById("diaSiguiente").addEventListener("click", () => {
+    if (esHoy(fechaSeleccionada)) return;
+    fechaSeleccionada.setDate(fechaSeleccionada.getDate() + 1);
+    cargarDia();
+  });
+
+  // ================== FRASE DEL DÍA ==================
   const mensajes = [
     "Antonella, eres el regalo más grande que la vida me ha dado. 💗",
     "No importa cuántos años cumplas, para mí siempre serás mi niña. 🎀",
@@ -155,65 +272,176 @@
     "Eres fuerte, eres valiente, eres increíble. Nunca lo olvides. 🌸",
     "Gracias por llenar mi vida de risas y colores. Te amo, hija. 🎈",
     "Donde sea que estés, mi corazón siempre va contigo. 💖",
-    "Eres mi razón para ser mejor cada día. Feliz cumpleaños, mi amor. 🎂",
+    "Eres mi razón para ser mejor cada día. Te amo, mi amor. 🎂",
     "Tus sueños son importantes para mí. Siempre voy a apoyarte. 🌟",
     "Te quiero tal como eres, hoy y siempre. 💗",
     "Ver crecer a una persona tan especial como tú es mi mayor orgullo. 🦋",
     "No hay distancia ni tiempo que cambie lo mucho que te amo. 💞",
-    "Eres luz en mi vida, Antonella. Feliz cumpleaños, princesa. 👑",
+    "Eres luz en mi vida, Antonella. Eres mi princesa. 👑",
     "Cuenta siempre conmigo, pase lo que pase. Te amo con todo mi corazón. 💗",
     "Cada logro tuyo, por pequeño que sea, me llena de alegría. 🎉",
   ];
-
-  function confeti() {
-    const emojis = ["🎈","🎉","💗","✨","🎀"];
-    for (let i = 0; i < 25; i++) {
-      const span = document.createElement("span");
-      span.className = "confetti";
-      span.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-      span.style.left = Math.random()*100 + "vw";
-      span.style.animationDuration = (2 + Math.random()*2) + "s";
-      document.body.appendChild(span);
-      setTimeout(() => span.remove(), 4000);
-    }
+  function diaDelAño(fecha) {
+    const inicio = new Date(fecha.getFullYear(), 0, 0);
+    return Math.floor((fecha - inicio) / (1000 * 60 * 60 * 24));
   }
-  window.addEventListener("load", confeti);
+  function mostrarFrase() {
+    const indice = diaDelAño(fechaSeleccionada) % mensajes.length;
+    document.getElementById("fraseDelDia").textContent = mensajes[indice];
+  }
 
-  document.getElementById("mensajeBtn").addEventListener("click", () => {
-    const caja = document.getElementById("mensajeCaja");
-    caja.textContent = mensajes[Math.floor(Math.random()*mensajes.length)];
-    caja.style.display = "block";
-    confeti();
+  // ================== TEXTO ==================
+  const textoDia = document.getElementById("textoDia");
+  document.getElementById("guardarTextoBtn").addEventListener("click", () => {
+    localStorage.setItem("texto_" + claveFecha(fechaSeleccionada), textoDia.value);
+    alert("¡Guardado! 💗");
   });
 
-  let numeroSecreto = Math.floor(Math.random()*20) + 1;
-  document.getElementById("adivinarBtn").addEventListener("click", () => {
-    const intento = parseInt(document.getElementById("intento").value);
-    const resultado = document.getElementById("resultado");
-    if (!intento) {
-      resultado.textContent = "Escribe un número primero 🙂";
-    } else if (intento === numeroSecreto) {
-      resultado.textContent = "¡SÍ! ¡Lo adivinaste! Eres una genio 🌟";
-      confeti();
-      numeroSecreto = Math.floor(Math.random()*20) + 1;
-    } else if (intento < numeroSecreto) {
-      resultado.textContent = "Un poquito más alto... 🔼";
-    } else {
-      resultado.textContent = "Un poquito más bajo... 🔽";
+  // ================== VOZ ==================
+  let mediaRecorder, chunks = [], segundos = 0, cronometro;
+  const grabarBtn = document.getElementById("grabarBtn");
+  const detenerBtn = document.getElementById("detenerBtn");
+  const reproductor = document.getElementById("reproductor");
+  const timerEl = document.getElementById("timer");
+
+  function formatoTiempo(s) {
+    return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+  }
+
+  grabarBtn.addEventListener("click", async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      chunks = [];
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        const lector = new FileReader();
+        lector.onloadend = () => {
+          try {
+            localStorage.setItem("audio_" + claveFecha(fechaSeleccionada), lector.result);
+          } catch (err) {
+            console.log("No se pudo guardar el audio (memoria llena)");
+          }
+        };
+        lector.readAsDataURL(blob);
+        reproductor.src = URL.createObjectURL(blob);
+        reproductor.style.display = "block";
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorder.start();
+      grabarBtn.disabled = true;
+      detenerBtn.disabled = false;
+      segundos = 0;
+      timerEl.textContent = formatoTiempo(segundos);
+      cronometro = setInterval(() => { segundos++; timerEl.textContent = formatoTiempo(segundos); }, 1000);
+    } catch (err) {
+      alert("No pude acceder al micrófono. Revisa los permisos. 🎤");
     }
   });
 
-  // ---- Instalación como app (PWA) ----
+  detenerBtn.addEventListener("click", () => {
+    mediaRecorder.stop();
+    clearInterval(cronometro);
+    grabarBtn.disabled = false;
+    detenerBtn.disabled = true;
+  });
+
+  // ================== DIBUJO ==================
+  const canvas = document.getElementById("lienzo");
+  const ctx = canvas.getContext("2d");
+  let dibujando = false, colorActual = "#ff2d95";
+
+  function posicion(e) {
+    const rect = canvas.getBoundingClientRect();
+    const escalaX = canvas.width / rect.width;
+    const escalaY = canvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: (clientX - rect.left) * escalaX, y: (clientY - rect.top) * escalaY };
+  }
+  function empezar(e) { dibujando = true; const p = posicion(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); e.preventDefault(); }
+  function dibujar(e) {
+    if (!dibujando) return;
+    const p = posicion(e);
+    ctx.lineTo(p.x,p.y); ctx.strokeStyle = colorActual; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.stroke();
+    e.preventDefault();
+  }
+  function terminar() { dibujando = false; }
+  canvas.addEventListener("mousedown", empezar);
+  canvas.addEventListener("mousemove", dibujar);
+  canvas.addEventListener("mouseup", terminar);
+  canvas.addEventListener("touchstart", empezar);
+  canvas.addEventListener("touchmove", dibujar);
+  canvas.addEventListener("touchend", terminar);
+
+  document.querySelectorAll(".color-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".color-btn").forEach(b => b.classList.remove("activo"));
+      btn.classList.add("activo");
+      colorActual = btn.dataset.color;
+    });
+  });
+  document.getElementById("borrarBtn").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
+  document.getElementById("guardarDibujoBtn").addEventListener("click", () => {
+    try {
+      localStorage.setItem("dibujo_" + claveFecha(fechaSeleccionada), canvas.toDataURL("image/png"));
+      alert("¡Dibujo guardado! 🎨💗");
+    } catch (err) {
+      alert("No se pudo guardar (memoria llena).");
+    }
+  });
+
+  // ================== CARGAR CONTENIDO DEL DÍA SELECCIONADO ==================
+  function cargarDia() {
+    actualizarNavegador();
+    mostrarFrase();
+
+    const clave = claveFecha(fechaSeleccionada);
+    const editable = esHoy(fechaSeleccionada);
+
+    // Texto
+    textoDia.value = localStorage.getItem("texto_" + clave) || "";
+    textoDia.disabled = !editable;
+    textoDia.placeholder = editable ? "¿Cómo te sientes hoy? ¿Qué pasó? Escribe aquí..." : "No escribiste nada este día";
+    document.getElementById("guardarTextoBtn").disabled = !editable;
+
+    // Audio
+    const audioGuardado = localStorage.getItem("audio_" + clave);
+    if (audioGuardado) {
+      reproductor.src = audioGuardado;
+      reproductor.style.display = "block";
+    } else {
+      reproductor.style.display = "none";
+      reproductor.src = "";
+    }
+    grabarBtn.disabled = !editable;
+    detenerBtn.disabled = true;
+    timerEl.textContent = "00:00";
+
+    // Dibujo
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const dibujoGuardado = localStorage.getItem("dibujo_" + clave);
+    if (dibujoGuardado) {
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.src = dibujoGuardado;
+    }
+    document.getElementById("guardarDibujoBtn").disabled = !editable;
+    document.getElementById("borrarBtn").disabled = !editable;
+  }
+
+  cargarDia();
+
+  // ================== INSTALAR APP (PWA) ==================
   let deferredPrompt;
   const instalarBtn = document.getElementById("instalarBtn");
   const instalarBanner = document.getElementById("instalarBanner");
-
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
     instalarBanner.style.display = "block";
   });
-
   instalarBtn.addEventListener("click", async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -221,11 +449,7 @@
     deferredPrompt = null;
     instalarBanner.style.display = "none";
   });
-
-  // Si ya está instalada, ocultar el banner
-  window.addEventListener("appinstalled", () => {
-    instalarBanner.style.display = "none";
-  });
+  window.addEventListener("appinstalled", () => { instalarBanner.style.display = "none"; });
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
