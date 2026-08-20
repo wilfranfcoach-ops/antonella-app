@@ -165,6 +165,36 @@
   .fila-dibujo-botones { text-align: center; }
 
   footer { margin-top: 30px; font-size: 12px; opacity: 0.7; }
+
+  .musica-flotante {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    font-size: 24px;
+    padding: 0;
+    margin: 0;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .musica-flotante.apagada {
+    background-color: #999;
+    opacity: 0.75;
+  }
+
+  .particula {
+    position: fixed;
+    top: -40px;
+    font-size: 26px;
+    pointer-events: none;
+    z-index: 300;
+    animation: caerParticula linear forwards;
+  }
+  @keyframes caerParticula {
+    to { transform: translateY(115vh) rotate(360deg); opacity: 0.2; }
+  }
 </style>
 </head>
 <body>
@@ -192,6 +222,16 @@
     <h3>💌 Frase de papá</h3>
     <div class="mensaje" id="fraseDelDia">-</div>
   </div>
+
+  <!-- ---------- DIVERSIÓN: SERPENTINAS Y CORAZONES ---------- -->
+  <div class="card" style="text-align:center;">
+    <h3>✨ Diversión</h3>
+    <button id="serpentinasBtn">🎊 Serpentinas</button>
+    <button id="corazonesBtn">💕 Corazones</button>
+  </div>
+
+  <!-- ---------- BOTÓN FLOTANTE DE MÚSICA ---------- -->
+  <button id="musicaBtn" class="musica-flotante">🎵</button>
 
   <!-- ---------- ESCRIBIR / GRABAR VOZ ---------- -->
   <div class="card">
@@ -432,6 +472,83 @@
   }
 
   cargarDia();
+
+  // ================== SERPENTINAS Y CORAZONES ==================
+  function lanzarParticulas(emojis, cantidad) {
+    for (let i = 0; i < cantidad; i++) {
+      setTimeout(() => {
+        const span = document.createElement("span");
+        span.className = "particula";
+        span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        span.style.left = Math.random() * 100 + "vw";
+        span.style.fontSize = (20 + Math.random() * 18) + "px";
+        span.style.animationDuration = (2.5 + Math.random() * 2) + "s";
+        document.body.appendChild(span);
+        setTimeout(() => span.remove(), 5000);
+      }, i * 40);
+    }
+  }
+
+  document.getElementById("serpentinasBtn").addEventListener("click", () => {
+    lanzarParticulas(["🎊", "🎉", "✨", "🎈"], 35);
+  });
+
+  document.getElementById("corazonesBtn").addEventListener("click", () => {
+    lanzarParticulas(["💗", "💕", "💖", "💞", "❤️"], 35);
+  });
+
+  // ================== MÚSICA DE FONDO (melodía generada, tipo cajita de música) ==================
+  let audioCtx = null;
+  let musicaSonando = false;
+  let temporizadorMelodia = null;
+
+  // Notas de una melodía suave y tierna (estilo cajita de música), en Hz
+  const melodia = [
+    523.25, 587.33, 659.25, 587.33, 523.25, 440.00, 493.88, 523.25,
+    523.25, 587.33, 659.25, 698.46, 659.25, 587.33, 523.25, 440.00,
+  ];
+  let notaActual = 0;
+
+  function tocarNota(frecuencia) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = frecuencia;
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.6);
+  }
+
+  function reproducirMelodia() {
+    tocarNota(melodia[notaActual]);
+    notaActual = (notaActual + 1) % melodia.length;
+    temporizadorMelodia = setTimeout(reproducirMelodia, 420);
+  }
+
+  const musicaBtn = document.getElementById("musicaBtn");
+  musicaBtn.addEventListener("click", () => {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (musicaSonando) {
+      clearTimeout(temporizadorMelodia);
+      musicaSonando = false;
+      musicaBtn.textContent = "🎵";
+      musicaBtn.classList.add("apagada");
+    } else {
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      reproducirMelodia();
+      musicaSonando = true;
+      musicaBtn.textContent = "🔇";
+      musicaBtn.classList.remove("apagada");
+    }
+  });
+  musicaBtn.classList.add("apagada");
 
   // ================== INSTALAR APP (PWA) ==================
   let deferredPrompt;
