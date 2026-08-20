@@ -497,37 +497,51 @@
     lanzarParticulas(["💗", "💕", "💖", "💞", "❤️"], 35);
   });
 
-  // ================== MÚSICA DE FONDO (melodía generada, tipo cajita de música) ==================
+  // ================== MÚSICA DE FONDO (balada suave de piano, generada) ==================
   let audioCtx = null;
   let musicaSonando = false;
   let temporizadorMelodia = null;
 
-  // Notas de una melodía suave y tierna (estilo cajita de música), en Hz
-  const melodia = [
-    523.25, 587.33, 659.25, 587.33, 523.25, 440.00, 493.88, 523.25,
-    523.25, 587.33, 659.25, 698.46, 659.25, 587.33, 523.25, 440.00,
+  // Progresión de acordes tierna (Am7 - Fmaj7 - C - G), tocada en arpegio suave
+  const acordes = [
+    [440.00, 523.25, 659.25, 783.99],   // Am7 (A-C-E-G)
+    [349.23, 440.00, 523.25, 659.25],   // Fmaj7 (F-A-C-E)
+    [261.63, 329.63, 392.00, 523.25],   // C (C-E-G-C)
+    [392.00, 493.88, 587.33, 783.99],   // G (G-B-D-G)
   ];
-  let notaActual = 0;
+  let acordeActual = 0;
+  let notaEnAcorde = 0;
 
-  function tocarNota(frecuencia) {
+  function tocarNota(frecuencia, volumen, duracion) {
     if (!audioCtx) return;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = "sine";
+    osc.type = "triangle";
     osc.frequency.value = frecuencia;
     gain.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+    gain.gain.linearRampToValueAtTime(volumen, audioCtx.currentTime + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duracion);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.6);
+    osc.stop(audioCtx.currentTime + duracion);
   }
 
   function reproducirMelodia() {
-    tocarNota(melodia[notaActual]);
-    notaActual = (notaActual + 1) % melodia.length;
-    temporizadorMelodia = setTimeout(reproducirMelodia, 420);
+    const acorde = acordes[acordeActual];
+
+    // Nota grave sostenida (le da cuerpo, como la mano izquierda del piano)
+    tocarNota(acorde[0] / 2, 0.05, 2.2);
+
+    // Nota del arpegio (la melodía que se mueve)
+    tocarNota(acorde[notaEnAcorde % acorde.length], 0.07, 1.3);
+
+    notaEnAcorde++;
+    if (notaEnAcorde % acorde.length === 0) {
+      acordeActual = (acordeActual + 1) % acordes.length;
+    }
+
+    temporizadorMelodia = setTimeout(reproducirMelodia, 550);
   }
 
   const musicaBtn = document.getElementById("musicaBtn");
@@ -542,6 +556,8 @@
       musicaBtn.classList.add("apagada");
     } else {
       if (audioCtx.state === "suspended") audioCtx.resume();
+      acordeActual = 0;
+      notaEnAcorde = 0;
       reproducirMelodia();
       musicaSonando = true;
       musicaBtn.textContent = "🔇";
@@ -574,4 +590,3 @@
 </script>
 </body>
 </html>
-
