@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -162,6 +163,8 @@
     cursor: pointer;
   }
   .color-btn.activo { border-color: #4a004a; }
+  .color-blanco { border-color: #d9a3c4 !important; }
+  .color-blanco.activo { border-color: #4a004a !important; }
   .fila-dibujo-botones { text-align: center; }
 
   /* ---- Selector de modo (Dibujar / Stickers) ---- */
@@ -308,6 +311,7 @@
       <span class="color-btn" style="background:#2dff6e" data-color="#2dff6e"></span>
       <span class="color-btn" style="background:#ffd12d" data-color="#ffd12d"></span>
       <span class="color-btn" style="background:#a02dff" data-color="#a02dff"></span>
+      <span class="color-btn color-blanco" style="background:#ffffff" data-color="#ffffff"></span>
     </div>
     <div class="stickers" id="filaStickers" style="display:none;">
       <span class="sticker-btn activo" data-sticker="⭐">⭐</span>
@@ -325,6 +329,7 @@
     </div>
     <p class="ayuda-stickers" id="ayudaStickers" style="display:none;">Toca un sticker arriba, luego toca el dibujo donde quieras pegarlo 💫</p>
     <div class="fila-dibujo-botones">
+      <button id="deshacerBtn">↩️ Deshacer</button>
       <button id="borrarBtn">🗑️ Borrar</button>
       <button id="guardarDibujoBtn">💾 Guardar dibujo</button>
     </div>
@@ -432,6 +437,7 @@
     "Eres luz en mi vida, Antonella. Eres mi princesa. 👑",
     "Cuenta siempre conmigo, pase lo que pase. Te amo con todo mi corazón. 💗",
     "Cada logro tuyo, por pequeño que sea, me llena de alegría. 🎉",
+    "Hoy te envío un fuerte abrazo como te gusta lleno de corazocitos rellenos de amor. 💗",
   ];
   function diaDelAño(fecha) {
     const inicio = new Date(fecha.getFullYear(), 0, 0);
@@ -506,6 +512,25 @@
   let modoActual = "dibujar"; // "dibujar" o "sticker"
   let stickerActual = "⭐";
 
+  // ---- Historial para poder Deshacer ----
+  let historial = [];
+  const MAX_HISTORIAL = 20;
+  function guardarEnHistorial() {
+    historial.push(canvas.toDataURL("image/png"));
+    if (historial.length > MAX_HISTORIAL) historial.shift();
+  }
+  function deshacer() {
+    if (historial.length === 0) return;
+    const anterior = historial.pop();
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+    img.src = anterior;
+  }
+  document.getElementById("deshacerBtn").addEventListener("click", deshacer);
+
   function posicion(e) {
     const rect = canvas.getBoundingClientRect();
     const escalaX = canvas.width / rect.width;
@@ -525,10 +550,12 @@
   function empezar(e) {
     const p = posicion(e);
     if (modoActual === "sticker") {
+      guardarEnHistorial();
       pegarSticker(p);
       e.preventDefault();
       return;
     }
+    guardarEnHistorial();
     dibujando = true;
     ctx.beginPath();
     ctx.moveTo(p.x,p.y);
@@ -537,7 +564,11 @@
   function dibujar(e) {
     if (modoActual === "sticker" || !dibujando) return;
     const p = posicion(e);
-    ctx.lineTo(p.x,p.y); ctx.strokeStyle = colorActual; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.stroke();
+    ctx.lineTo(p.x,p.y);
+    ctx.strokeStyle = colorActual;
+    ctx.lineWidth = (colorActual === "#ffffff") ? 22 : 6;
+    ctx.lineCap = "round";
+    ctx.stroke();
     e.preventDefault();
   }
   function terminar() { dibujando = false; }
@@ -587,7 +618,10 @@
       colorActual = btn.dataset.color;
     });
   });
-  document.getElementById("borrarBtn").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
+  document.getElementById("borrarBtn").addEventListener("click", () => {
+    guardarEnHistorial();
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  });
   document.getElementById("guardarDibujoBtn").addEventListener("click", async () => {
     try {
       await guardarEnDB("dibujo_" + claveFecha(fechaSeleccionada), canvas.toDataURL("image/png"));
@@ -634,6 +668,8 @@
     }
     document.getElementById("guardarDibujoBtn").disabled = !editable;
     document.getElementById("borrarBtn").disabled = !editable;
+    document.getElementById("deshacerBtn").disabled = !editable;
+    historial = [];
   }
 
   dbListo.then(cargarDia);
