@@ -164,6 +164,51 @@
   .color-btn.activo { border-color: #4a004a; }
   .fila-dibujo-botones { text-align: center; }
 
+  /* ---- Selector de modo (Dibujar / Stickers) ---- */
+  .modo-selector {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .modo-btn {
+    background: white;
+    color: #a3005c;
+    box-shadow: none;
+    border: 2px solid #ffb6de;
+    font-size: 14px;
+    padding: 7px 16px;
+  }
+  .modo-btn.activo {
+    background-color: #ff2d95;
+    color: white;
+    border-color: #ff2d95;
+  }
+
+  /* ---- Stickers ---- */
+  .stickers {
+    text-align: center;
+    margin: 10px 0;
+  }
+  .sticker-btn {
+    display: inline-block;
+    font-size: 26px;
+    padding: 4px;
+    margin: 3px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .sticker-btn.activo {
+    background: #ffe4f3;
+    box-shadow: 0 0 0 2px #ff2d95;
+  }
+  .ayuda-stickers {
+    text-align: center;
+    font-size: 13px;
+    color: #a3005c;
+    margin: 4px 0 0;
+  }
+
   footer { margin-top: 30px; font-size: 12px; opacity: 0.7; }
 
   .musica-flotante {
@@ -251,8 +296,12 @@
   <!-- ---------- DIBUJO ---------- -->
   <div class="card">
     <h3>🎨 Dibuja algo de hoy</h3>
+    <div class="modo-selector">
+      <button id="modoDibujarBtn" class="modo-btn activo">🖌️ Dibujar</button>
+      <button id="modoStickerBtn" class="modo-btn">⭐ Stickers</button>
+    </div>
     <canvas id="lienzo" width="380" height="380"></canvas>
-    <div class="colores">
+    <div class="colores" id="filaColores">
       <span class="color-btn activo" style="background:#ff2d95" data-color="#ff2d95"></span>
       <span class="color-btn" style="background:#000000" data-color="#000000"></span>
       <span class="color-btn" style="background:#2d7dff" data-color="#2d7dff"></span>
@@ -260,6 +309,21 @@
       <span class="color-btn" style="background:#ffd12d" data-color="#ffd12d"></span>
       <span class="color-btn" style="background:#a02dff" data-color="#a02dff"></span>
     </div>
+    <div class="stickers" id="filaStickers" style="display:none;">
+      <span class="sticker-btn activo" data-sticker="⭐">⭐</span>
+      <span class="sticker-btn" data-sticker="💗">💗</span>
+      <span class="sticker-btn" data-sticker="🌸">🌸</span>
+      <span class="sticker-btn" data-sticker="🦄">🦄</span>
+      <span class="sticker-btn" data-sticker="🎀">🎀</span>
+      <span class="sticker-btn" data-sticker="✨">✨</span>
+      <span class="sticker-btn" data-sticker="🌈">🌈</span>
+      <span class="sticker-btn" data-sticker="🐱">🐱</span>
+      <span class="sticker-btn" data-sticker="🌻">🌻</span>
+      <span class="sticker-btn" data-sticker="💎">💎</span>
+      <span class="sticker-btn" data-sticker="🍓">🍓</span>
+      <span class="sticker-btn" data-sticker="👑">👑</span>
+    </div>
+    <p class="ayuda-stickers" id="ayudaStickers" style="display:none;">Toca un sticker arriba, luego toca el dibujo donde quieras pegarlo 💫</p>
     <div class="fila-dibujo-botones">
       <button id="borrarBtn">🗑️ Borrar</button>
       <button id="guardarDibujoBtn">💾 Guardar dibujo</button>
@@ -368,7 +432,6 @@
     "Eres luz en mi vida, Antonella. Eres mi princesa. 👑",
     "Cuenta siempre conmigo, pase lo que pase. Te amo con todo mi corazón. 💗",
     "Cada logro tuyo, por pequeño que sea, me llena de alegría. 🎉",
-    "Hoy te envío un fuerte abrazo como te gusta lleno de corazocitos rellenos de amor. 💗",
   ];
   function diaDelAño(fecha) {
     const inicio = new Date(fecha.getFullYear(), 0, 0);
@@ -440,6 +503,8 @@
   const canvas = document.getElementById("lienzo");
   const ctx = canvas.getContext("2d");
   let dibujando = false, colorActual = "#ff2d95";
+  let modoActual = "dibujar"; // "dibujar" o "sticker"
+  let stickerActual = "⭐";
 
   function posicion(e) {
     const rect = canvas.getBoundingClientRect();
@@ -449,9 +514,28 @@
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return { x: (clientX - rect.left) * escalaX, y: (clientY - rect.top) * escalaY };
   }
-  function empezar(e) { dibujando = true; const p = posicion(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); e.preventDefault(); }
+
+  function pegarSticker(p) {
+    ctx.font = "44px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(stickerActual, p.x, p.y);
+  }
+
+  function empezar(e) {
+    const p = posicion(e);
+    if (modoActual === "sticker") {
+      pegarSticker(p);
+      e.preventDefault();
+      return;
+    }
+    dibujando = true;
+    ctx.beginPath();
+    ctx.moveTo(p.x,p.y);
+    e.preventDefault();
+  }
   function dibujar(e) {
-    if (!dibujando) return;
+    if (modoActual === "sticker" || !dibujando) return;
     const p = posicion(e);
     ctx.lineTo(p.x,p.y); ctx.strokeStyle = colorActual; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.stroke();
     e.preventDefault();
@@ -463,6 +547,38 @@
   canvas.addEventListener("touchstart", empezar);
   canvas.addEventListener("touchmove", dibujar);
   canvas.addEventListener("touchend", terminar);
+
+  // ---- Selector de modo: Dibujar / Stickers ----
+  const modoDibujarBtn = document.getElementById("modoDibujarBtn");
+  const modoStickerBtn = document.getElementById("modoStickerBtn");
+  const filaColores = document.getElementById("filaColores");
+  const filaStickers = document.getElementById("filaStickers");
+  const ayudaStickers = document.getElementById("ayudaStickers");
+
+  modoDibujarBtn.addEventListener("click", () => {
+    modoActual = "dibujar";
+    modoDibujarBtn.classList.add("activo");
+    modoStickerBtn.classList.remove("activo");
+    filaColores.style.display = "block";
+    filaStickers.style.display = "none";
+    ayudaStickers.style.display = "none";
+  });
+  modoStickerBtn.addEventListener("click", () => {
+    modoActual = "sticker";
+    modoStickerBtn.classList.add("activo");
+    modoDibujarBtn.classList.remove("activo");
+    filaColores.style.display = "none";
+    filaStickers.style.display = "block";
+    ayudaStickers.style.display = "block";
+  });
+
+  document.querySelectorAll(".sticker-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".sticker-btn").forEach(b => b.classList.remove("activo"));
+      btn.classList.add("activo");
+      stickerActual = btn.dataset.sticker;
+    });
+  });
 
   document.querySelectorAll(".color-btn").forEach(btn => {
     btn.addEventListener("click", () => {
