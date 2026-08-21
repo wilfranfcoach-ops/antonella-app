@@ -243,6 +243,7 @@
     to { transform: translateY(115vh) rotate(360deg); opacity: 0.2; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -334,6 +335,14 @@
     </div>
   </div>
 
+  <!-- ---------- EXPORTAR RECUERDOS ---------- -->
+  <div class="card" style="text-align:center;">
+    <h3>💾 Guardar mis recuerdos</h3>
+    <p style="font-size:14px; text-align:center; margin-top:-4px;">Descarga todo lo que has escrito, dibujado y grabado, para guardarlo en tu computador</p>
+    <button id="exportarBtn">📦 Descargar mis recuerdos</button>
+    <p id="exportarEstado" style="font-size:13px; text-align:center; color:#a3005c; margin:8px 0 0; display:none;"></p>
+  </div>
+
   <footer>Hecho con 💗 por tu papá</footer>
 
 <script>
@@ -370,6 +379,15 @@
       const solicitud = tx.objectStore("entradas").get(clave);
       solicitud.onsuccess = () => resolve(solicitud.result ? solicitud.result.valor : null);
       solicitud.onerror = () => resolve(null);
+    });
+  }
+
+  function obtenerTodasLasEntradas() {
+    return new Promise((resolve) => {
+      const tx = db.transaction("entradas", "readonly");
+      const solicitud = tx.objectStore("entradas").getAll();
+      solicitud.onsuccess = () => resolve(solicitud.result || []);
+      solicitud.onerror = () => resolve([]);
     });
   }
 
@@ -436,7 +454,6 @@
     "Eres luz en mi vida, Antonella. Eres mi princesa. 👑",
     "Cuenta siempre conmigo, pase lo que pase. Te amo con todo mi corazón. 💗",
     "Cada logro tuyo, por pequeño que sea, me llena de alegría. 🎉",
-    "•	Hoy te envío un fuerte abrazo como te gusta lleno de corazocitos rellenos de amor. 💗",
   ];
   function diaDelAño(fecha) {
     const inicio = new Date(fecha.getFullYear(), 0, 0);
@@ -765,6 +782,71 @@
     }
   });
   musicaBtn.classList.add("apagada");
+
+  // ================== EXPORTAR RECUERDOS (ZIP) ==================
+  function dataURLaBase64Puro(dataURL) {
+    return dataURL.split(",")[1] || "";
+  }
+
+  document.getElementById("exportarBtn").addEventListener("click", async () => {
+    const estado = document.getElementById("exportarEstado");
+    estado.style.display = "block";
+    estado.textContent = "Preparando tus recuerdos... 💗";
+
+    try {
+      const entradas = await obtenerTodasLasEntradas();
+
+      if (entradas.length === 0) {
+        estado.textContent = "Todavía no hay recuerdos guardados para descargar.";
+        return;
+      }
+
+      // Agrupar por fecha
+      const porFecha = {};
+      entradas.forEach(({ clave, valor }) => {
+        const guion = clave.indexOf("_");
+        const tipo = clave.slice(0, guion);       // texto / audio / dibujo
+        const fecha = clave.slice(guion + 1);      // YYYY-MM-DD
+        if (!porFecha[fecha]) porFecha[fecha] = {};
+        porFecha[fecha][tipo] = valor;
+      });
+
+      const zip = new JSZip();
+      const fechasOrdenadas = Object.keys(porFecha).sort();
+
+      fechasOrdenadas.forEach((fecha) => {
+        const carpeta = zip.folder(fecha);
+        const datos = porFecha[fecha];
+
+        if (datos.texto) {
+          carpeta.file("texto.txt", datos.texto);
+        }
+        if (datos.dibujo) {
+          carpeta.file("dibujo.png", dataURLaBase64Puro(datos.dibujo), { base64: true });
+        }
+        if (datos.audio) {
+          carpeta.file("audio.webm", dataURLaBase64Puro(datos.audio), { base64: true });
+        }
+      });
+
+      estado.textContent = "Comprimiendo archivo... 📦";
+      const blob = await zip.generateAsync({ type: "blob" });
+
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = "Diario_de_Antonella_" + claveFecha(HOY) + ".zip";
+      document.body.appendChild(enlace);
+      enlace.click();
+      document.body.removeChild(enlace);
+      URL.revokeObjectURL(url);
+
+      estado.textContent = "¡Listo! Revisa tus descargas 💗";
+    } catch (err) {
+      console.error(err);
+      estado.textContent = "Hubo un problema al preparar el archivo. Intenta de nuevo.";
+    }
+  });
 
   // ================== INSTALAR APP (PWA) ==================
   let deferredPrompt;
