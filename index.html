@@ -269,6 +269,54 @@
   <footer>Hecho con 💗 por tu papá</footer>
 
 <script>
+  // ================== BASE DE DATOS LOCAL (IndexedDB) ==================
+  // Mucha más capacidad que localStorage — ideal para guardar audio y dibujos por meses.
+  let db;
+  const dbListo = new Promise((resolve) => {
+    const solicitud = indexedDB.open("antonella-diario-db", 1);
+    solicitud.onupgradeneeded = (e) => {
+      e.target.result.createObjectStore("entradas", { keyPath: "clave" });
+    };
+    solicitud.onsuccess = (e) => {
+      db = e.target.result;
+      migrarDesdeLocalStorage().then(resolve);
+    };
+    solicitud.onerror = () => {
+      console.log("No se pudo abrir la base de datos local");
+      resolve();
+    };
+  });
+
+  function guardarEnDB(clave, valor) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction("entradas", "readwrite");
+      tx.objectStore("entradas").put({ clave, valor });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  function leerDeDB(clave) {
+    return new Promise((resolve) => {
+      const tx = db.transaction("entradas", "readonly");
+      const solicitud = tx.objectStore("entradas").get(clave);
+      solicitud.onsuccess = () => resolve(solicitud.result ? solicitud.result.valor : null);
+      solicitud.onerror = () => resolve(null);
+    });
+  }
+
+  // Mueve automáticamente a IndexedDB cualquier entrada vieja que haya quedado en localStorage
+  async function migrarDesdeLocalStorage() {
+    const prefijos = ["texto_", "audio_", "dibujo_"];
+    for (let i = 0; i < localStorage.length; i++) {
+      const clave = localStorage.key(i);
+      if (prefijos.some(p => clave.startsWith(p))) {
+        const valor = localStorage.getItem(clave);
+        await guardarEnDB(clave, valor);
+      }
+    }
+  }
+
   // ================== FECHAS Y NAVEGACIÓN ==================
   const HOY = new Date();
   HOY.setHours(0,0,0,0);
@@ -320,7 +368,6 @@
     "Eres luz en mi vida, Antonella. Eres mi princesa. 👑",
     "Cuenta siempre conmigo, pase lo que pase. Te amo con todo mi corazón. 💗",
     "Cada logro tuyo, por pequeño que sea, me llena de alegría. 🎉",
-    "Hoy te envío un fuerte abrazo como te gusta lleno de corazocitos rellenos de amor. 💗",
   ];
   function diaDelAño(fecha) {
     const inicio = new Date(fecha.getFullYear(), 0, 0);
@@ -333,8 +380,8 @@
 
   // ================== TEXTO ==================
   const textoDia = document.getElementById("textoDia");
-  document.getElementById("guardarTextoBtn").addEventListener("click", () => {
-    localStorage.setItem("texto_" + claveFecha(fechaSeleccionada), textoDia.value);
+  document.getElementById("guardarTextoBtn").addEventListener("click", async () => {
+    await guardarEnDB("texto_" + claveFecha(fechaSeleccionada), textoDia.value);
     alert("¡Guardado! 💗");
   });
 
@@ -358,11 +405,11 @@
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunks, { type: "audio/webm" });
         const lector = new FileReader();
-        lector.onloadend = () => {
+        lector.onloadend = async () => {
           try {
-            localStorage.setItem("audio_" + claveFecha(fechaSeleccionada), lector.result);
+            await guardarEnDB("audio_" + claveFecha(fechaSeleccionada), lector.result);
           } catch (err) {
-            console.log("No se pudo guardar el audio (memoria llena)");
+            console.log("No se pudo guardar el audio");
           }
         };
         lector.readAsDataURL(blob);
@@ -424,17 +471,17 @@
     });
   });
   document.getElementById("borrarBtn").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
-  document.getElementById("guardarDibujoBtn").addEventListener("click", () => {
+  document.getElementById("guardarDibujoBtn").addEventListener("click", async () => {
     try {
-      localStorage.setItem("dibujo_" + claveFecha(fechaSeleccionada), canvas.toDataURL("image/png"));
+      await guardarEnDB("dibujo_" + claveFecha(fechaSeleccionada), canvas.toDataURL("image/png"));
       alert("¡Dibujo guardado! 🎨💗");
     } catch (err) {
-      alert("No se pudo guardar (memoria llena).");
+      alert("No se pudo guardar el dibujo.");
     }
   });
 
   // ================== CARGAR CONTENIDO DEL DÍA SELECCIONADO ==================
-  function cargarDia() {
+  async function cargarDia() {
     actualizarNavegador();
     mostrarFrase();
 
@@ -442,13 +489,13 @@
     const editable = esHoy(fechaSeleccionada);
 
     // Texto
-    textoDia.value = localStorage.getItem("texto_" + clave) || "";
+    textoDia.value = (await leerDeDB("texto_" + clave)) || "";
     textoDia.disabled = !editable;
     textoDia.placeholder = editable ? "¿Cómo te sientes hoy? ¿Qué pasó? Escribe aquí..." : "No escribiste nada este día";
     document.getElementById("guardarTextoBtn").disabled = !editable;
 
     // Audio
-    const audioGuardado = localStorage.getItem("audio_" + clave);
+    const audioGuardado = await leerDeDB("audio_" + clave);
     if (audioGuardado) {
       reproductor.src = audioGuardado;
       reproductor.style.display = "block";
@@ -462,7 +509,7 @@
 
     // Dibujo
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    const dibujoGuardado = localStorage.getItem("dibujo_" + clave);
+    const dibujoGuardado = await leerDeDB("dibujo_" + clave);
     if (dibujoGuardado) {
       const img = new Image();
       img.onload = () => ctx.drawImage(img, 0, 0);
@@ -472,7 +519,7 @@
     document.getElementById("borrarBtn").disabled = !editable;
   }
 
-  cargarDia();
+  dbListo.then(cargarDia);
 
   // ================== SERPENTINAS Y CORAZONES ==================
   function lanzarParticulas(emojis, cantidad) {
